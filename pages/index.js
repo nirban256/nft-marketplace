@@ -43,7 +43,17 @@ export default function Home() {
   }
 
   async function buyNFTs(nft) {
-
+    const web3Modal = new Web3modal()
+    const connection = await web3Modal.connect()
+    const provider = new ethers.providers.Web3Provider(connection)
+    const signer = provider.getSigner()
+    const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
+    const price = ethers.utils.parseUnits(nft.price.tostring(), 'ether')
+    const transaction = await contract.createMarketSale(nftaddress, nft.tokenId, {
+      value: price
+    })
+    await transaction.wait()
+    loadNFTs()
   }
 
   if (loading === 'loaded' && !nfts.length) return (
@@ -51,8 +61,18 @@ export default function Home() {
   )
 
   return (
-    <div className="text-3xl font-bold underline">
-      Hello NextJs
+    <div className="flex justify-center">
+      <div className="px-4" style={{ maxWidth: '1600px' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 pt-4 gap-4">
+          {
+            nfts.map((nft, i) => {
+              <div key={i} className="border shadow rounded-xl overflow-hidden">
+
+              </div>
+            })
+          }
+        </div>
+      </div>
     </div>
   )
 }
